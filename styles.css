@@ -1,4 +1,9 @@
 /* Chrome, Safari, Edge, Opera */
+ul {
+  list-style: none;
+  padding-left: 0px;
+}
+
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
