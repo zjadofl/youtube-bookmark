@@ -87,7 +87,7 @@ function getVideoCurrentTime(button) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  var addButton = document.getElementById('btn');
+  var addButton = document.getElementById('add_btn');
   addButton.addEventListener('click', function() {
     getVideoCurrentTime();
   });
