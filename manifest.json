@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "YouTube Bookmaker",
+  "description": "유튜브 영상 북마크 확장프로그램입니다.",
+  "version": "1.0",
+  "permissions": [
+    "scripting",
+    "activeTab"
+  ], 
+  "content_scripts": [
+    {
+      "matches": ["*://*.youtube.com/*"],
+      "js": ["content.js"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "logo.png"
+  },
+  "host_permissions": [
+    "https://www.youtube.com/*"
+  ]
+}
