@@ -1,11 +1,50 @@
 /* Chrome, Safari, Edge, Opera */
+body {
+  overflow-y: auto;
+  -ms-overflow-style: none; /* 스크롤바 제거*/
+}
+
 ul {
   list-style: none;
   padding-left: 0px;
+  margin-top: 100px;
 }
 
+li {
+  margin: 0px;
+  padding: 0px;
+}
+
+input[type="text"] {
+  margin: 0px;
+  padding: 0px;
+}
+
+
+/*증량버튼 제거*/
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+/* 스크롤바 제거*/  
+::-webkit-scrollbar {
+  display: none;
+}
+
+#menu {
+  position: fixed;
+  top: 0px; 
+  left: 0px; 
+  width: 100%; 
+  padding: 10px;
+  background-color: white; 
+  z-index: 999; 
+}
+
+.container {
+  width: 300px;
+  height: 400px;
+  padding: 5px;
 }
