@@ -59,3 +59,28 @@ input::-webkit-inner-spin-button {
   height: 400px;
   padding: 5px;
 }
+
+.delete-icon {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.memo {
+  border: none;
+  background: transparent;
+}
+
+input[type="text"].memo {
+  margin-bottom: 10px;
+}
+
+.video-time {
+  color: #b8860b;
+  border-width: 2px;
+  font-size: 14px;
+}
+
+.icon-div {
+  display: flex;
+  align-items: center;
+}
