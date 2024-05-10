@@ -52,7 +52,7 @@ function addBookmark(videoSeconds) {
   listItem.innerHTML = `
   <div class="video-info">
     <input type="textarea" class="memo" placeholder="빈 메모입니다." disabled >
-    <span class="video-time">${formatVideoTime(videoSeconds)}</span>
+    <span class="video-time" time=${videoSeconds}>${formatVideoTime(videoSeconds)}</span>
   </div>
   <div class="icon-div">
     <img src="images/edit.png" class="edit-icon">
@@ -78,9 +78,9 @@ document.addEventListener('DOMContentLoaded', function() {
   const bookmarkList = document.getElementById('bookmark_list');
   bookmarkList.addEventListener('click', function(event) {
     const clickedIcon = event.target;
+    const listItem = clickedIcon.closest('.bookmark-item');
 
     if (clickedIcon.classList.contains('edit-icon')) {
-      const listItem = clickedIcon.closest('.bookmark-item');
       enableMemo(listItem);
 
       const memoInput = listItem.querySelector(".memo");
@@ -92,7 +92,10 @@ document.addEventListener('DOMContentLoaded', function() {
     } else if (clickedIcon.classList.contains('delete-icon')) {
       
     } else if (clickedIcon.classList.contains('share-icon')) {
-
+      getshareURL(listItem).then(shareURL => {
+        navigator.clipboard.writeText(shareURL);
+        alert('북마크 URL이 복사되었습니다.');
+      });      
     }
   });
 });
@@ -123,5 +126,19 @@ async function checkYoutubePage() {
     }
   } catch (error) {
     console.error("[오류] URL 가져오는 데에 실패함", error);
+    return null;
   }
+}
+
+async function getshareURL(listItem) {
+  let shareURL = "";
+  try {
+    let url = await getActiveTabURL();
+    url = url.replace(/&?t=\d+s?/, "");
+    const videoTime = listItem.querySelector(".video-time").getAttribute("time");
+    shareURL = url + "&t=" + videoTime+"s"; 
+  } catch (error) {
+    console.error("[오류] URL 가져오는 데에 실패함", error);
+  }
+  return shareURL;
 }
