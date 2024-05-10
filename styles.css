@@ -68,9 +68,6 @@ input::-webkit-inner-spin-button {
 .memo {
   border: none;
   background: transparent;
-}
-
-input[type="text"].memo {
   margin-bottom: 10px;
 }
 

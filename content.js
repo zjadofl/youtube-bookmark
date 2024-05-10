@@ -33,6 +33,15 @@ async function getVideoCurrentTime() {
   }
 }
 
+// 메모 활성화
+function enableMemo(listItem) {
+  const memoInput = listItem.querySelector(".memo");
+  memoInput.removeAttribute('disabled');
+  memoInput.focus();
+  const editIcon = listItem.querySelector(".edit-icon");
+  editIcon.src = "images/edit_active.png";
+}
+
 // 북마크 추가
 function addBookmark(videoSeconds) {
   const listItem = document.createElement("li");
@@ -42,7 +51,7 @@ function addBookmark(videoSeconds) {
   listItem.scrollIntoView({ behavior: 'smooth', block: 'end' });
   listItem.innerHTML = `
   <div class="video-info">
-    <input type="text" class="memo" placeholder="빈 메모입니다." disabled >
+    <input type="textarea" class="memo" placeholder="빈 메모입니다." disabled >
     <span class="video-time">${formatVideoTime(videoSeconds)}</span>
   </div>
   <div class="icon-div">
@@ -62,5 +71,26 @@ document.addEventListener('DOMContentLoaded', function() {
   var addButton = document.getElementById('add_btn');
   addButton.addEventListener('click', function() {
     getVideoCurrentTime();
+  });
+
+  const bookmarkList = document.getElementById('bookmark_list');
+  bookmarkList.addEventListener('click', function(event) {
+    const clickedIcon = event.target;
+
+    if (clickedIcon.classList.contains('edit-icon')) {
+      const listItem = clickedIcon.closest('.bookmark-item');
+      enableMemo(listItem);
+
+      const memoInput = listItem.querySelector(".memo");
+      memoInput.addEventListener('blur', function() {
+        memoInput.setAttribute('disabled', true);
+        const editIcon = listItem.querySelector(".edit-icon");
+        editIcon.src = "images/edit.png";
+      });
+    } else if (clickedIcon.classList.contains('delete-icon')) {
+      
+    } else if (clickedIcon.classList.contains('share-icon')) {
+
+    }
   });
 });
