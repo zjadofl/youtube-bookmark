@@ -73,6 +73,8 @@ document.addEventListener('DOMContentLoaded', function() {
     getVideoCurrentTime();
   });
 
+  checkYoutubePage();
+
   const bookmarkList = document.getElementById('bookmark_list');
   bookmarkList.addEventListener('click', function(event) {
     const clickedIcon = event.target;
@@ -95,19 +97,31 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-// youtube 페이지 여부에 따라 활성화
-chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-  const activeTab = tabs[0];
-  const url = activeTab.url;
-  console.log("현재 활성화된 탭의 URL:", url);
+function getActiveTabURL() {
+  return new Promise((resolve, reject) => {
+    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+      const activeTab = tabs[0];
+      const url = activeTab.url;
+      console.log("현재 활성화된 탭의 URL:", url);
+      resolve(url);
+    });
+  });
+}
 
-  const regex = /www\.youtube\.com\/watch\?v=/;
-  if (!url.match(regex)) {
-    const addBtn = document.getElementById('add_btn');
-    addBtn.remove();
-    const bookmarkList = document.getElementById('bookmark_list');
-    const listItem = document.createElement("li");
-    listItem.textContent = "Youtube 영상 페이지일 때만 버튼이 활성화됩니다.";
-    bookmarkList.appendChild(listItem);
+// youtube 페이지 여부에 따라 버튼 활성화
+async function checkYoutubePage() {
+  try {
+    const url = await getActiveTabURL();
+    const regex = /www\.youtube\.com\/watch\?v=/;
+    if (!url.match(regex)) {
+      const addBtn = document.getElementById('add_btn');
+      addBtn.remove();
+      const bookmarkList = document.getElementById('bookmark_list');
+      const listItem = document.createElement("li");
+      listItem.textContent = "Youtube 영상 페이지일 때만 버튼이 활성화됩니다.";
+      bookmarkList.appendChild(listItem);
+    }
+  } catch (error) {
+    console.error("[오류] URL 가져오는 데에 실패함", error);
   }
-});
+}
