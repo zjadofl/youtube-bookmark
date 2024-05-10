@@ -94,3 +94,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 });
+
+// youtube 페이지 여부에 따라 활성화
+chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+  const activeTab = tabs[0];
+  const url = activeTab.url;
+  console.log("현재 활성화된 탭의 URL:", url);
+
+  const regex = /www\.youtube\.com\/watch\?v=/;
+  if (!url.match(regex)) {
+    const addBtn = document.getElementById('add_btn');
+    addBtn.remove();
+    const bookmarkList = document.getElementById('bookmark_list');
+    const listItem = document.createElement("li");
+    listItem.textContent = "Youtube 영상 페이지일 때만 버튼이 활성화됩니다.";
+    bookmarkList.appendChild(listItem);
+  }
+});
