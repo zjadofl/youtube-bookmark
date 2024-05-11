@@ -23,7 +23,6 @@ async function getVideoCurrentTime() {
     }
   });
 
-  const bookmarkList = document.getElementById("bookmark_list");
   for (let result of results) {
     if (result.result != null) {
       addBookmark(result.result);
@@ -43,7 +42,7 @@ function enableMemo(listItem) {
 }
 
 // 북마크 추가
-function addBookmark(videoSeconds) {
+async function addBookmark(videoSeconds) {
   const listItem = document.createElement("li");
   listItem.style.padding = "5px";
   listItem.style.display = "flex"; 
@@ -65,41 +64,22 @@ function addBookmark(videoSeconds) {
   listItem.scrollIntoView({ behavior: 'smooth', block: 'end' });
   const hr = document.createElement("hr");
   bookmarkList.appendChild(hr);
+
+  try {
+    let url = await getActiveTabURL();
+    url = url.replace("www.youtube.com/t=", "").replace(/&v=\d+/, "");
+    const bookmarkInfo = {
+      'videoID': url,
+      'time': videoSeconds,
+      'memo': '' 
+    };
+    saveBookmarks(bookmarkInfo);
+  } catch (error) {
+    console.error("[에러] 북마크를 저장하는 데 실패", error);
+  }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  var addButton = document.getElementById('add_btn');
-  addButton.addEventListener('click', function() {
-    getVideoCurrentTime();
-  });
-
-  checkYoutubePage();
-
-  const bookmarkList = document.getElementById('bookmark_list');
-  bookmarkList.addEventListener('click', function(event) {
-    const clickedIcon = event.target;
-    const listItem = clickedIcon.closest('.bookmark-item');
-
-    if (clickedIcon.classList.contains('edit-icon')) {
-      enableMemo(listItem);
-
-      const memoInput = listItem.querySelector(".memo");
-      memoInput.addEventListener('blur', function() {
-        memoInput.setAttribute('disabled', true);
-        const editIcon = listItem.querySelector(".edit-icon");
-        editIcon.src = "images/edit.png";
-      });
-    } else if (clickedIcon.classList.contains('delete-icon')) {
-      
-    } else if (clickedIcon.classList.contains('share-icon')) {
-      getshareURL(listItem).then(shareURL => {
-        navigator.clipboard.writeText(shareURL);
-        alert('북마크 URL이 복사되었습니다.');
-      });      
-    }
-  });
-});
-
+// URL 가져오기
 function getActiveTabURL() {
   return new Promise((resolve, reject) => {
     chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
@@ -107,6 +87,19 @@ function getActiveTabURL() {
       const url = activeTab.url;
       console.log("현재 활성화된 탭의 URL:", url);
       resolve(url);
+    });
+  });
+}
+
+// 북마크 저장
+function saveBookmarks(bookmarkInfo) {
+  chrome.storage.sync.get(['bookmarks'], function(result) {
+    const bookmarks = result.bookmarks || [];
+    bookmarks.push(bookmarkInfo);
+    
+    chrome.storage.sync.set({ 'bookmarks': bookmarks }, function() {
+      console.log('북마크가 저장되었습니다.');
+      console.log(bookmarks);
     });
   });
 }
@@ -142,3 +135,38 @@ async function getshareURL(listItem) {
   }
   return shareURL;
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  var addButton = document.getElementById('add_btn');
+  addButton.addEventListener('click', function() {
+    getVideoCurrentTime();
+  });
+
+  checkYoutubePage();
+  chrome.storage.local.get();
+
+  const bookmarkList = document.getElementById('bookmark_list');
+  bookmarkList.addEventListener('click', function(event) {
+    const clickedIcon = event.target;
+    const listItem = clickedIcon.closest('.bookmark-item');
+
+    if (clickedIcon.classList.contains('edit-icon')) {
+      enableMemo(listItem);
+
+      const memoInput = listItem.querySelector(".memo");
+      memoInput.addEventListener('blur', function() {
+        memoInput.setAttribute('disabled', true);
+        const editIcon = listItem.querySelector(".edit-icon");
+        editIcon.src = "images/edit.png";
+        
+      });
+    } else if (clickedIcon.classList.contains('delete-icon')) {
+      
+    } else if (clickedIcon.classList.contains('share-icon')) {
+      getshareURL(listItem).then(shareURL => {
+        navigator.clipboard.writeText(shareURL);
+        alert('북마크 URL이 복사되었습니다.');
+      });      
+    }
+  });
+});
